@@ -8,6 +8,12 @@ import {
 } from "chromadb";
 import type { TextItem } from "pdfjs-dist/types/src/display/api";
 
+// import {OllamaEmbeddingFunction} from "chromadb";
+// const embedder = new OllamaEmbeddingFunction({
+//     url: "http://127.0.0.1:11434/api/embeddings",
+//     model: "llama2"
+// })
+
 pdfjsLib.GlobalWorkerOptions.workerSrc = "./pdf.worker.mjs";
 
 type Collection = Awaited<ReturnType<ChromaClient["getOrCreateCollection"]>>;
