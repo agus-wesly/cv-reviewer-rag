@@ -1,11 +1,6 @@
 import { readdir } from "node:fs/promises";
 import * as pdfjsLib from "pdfjs-dist";
-import {
-    ChromaClient,
-    GoogleGenerativeAiEmbeddingFunction,
-    type Documents,
-    type IDs,
-} from "chromadb";
+import { ChromaClient, type Documents, type IDs } from "chromadb";
 import type { TextItem } from "pdfjs-dist/types/src/display/api";
 
 // import {OllamaEmbeddingFunction} from "chromadb";
@@ -21,9 +16,9 @@ type Collection = Awaited<ReturnType<ChromaClient["getOrCreateCollection"]>>;
 let client: ChromaClient | null = null;
 let collection: Collection;
 
-const embedder = new GoogleGenerativeAiEmbeddingFunction({
-    googleApiKey: "AIzaSyAeX_8PudInBdQegoOxcJqU6o3MsOHP53I",
-});
+// const embedder = new GoogleGenerativeAiEmbeddingFunction({
+//     googleApiKey: process.env.GOOGLE_API_KEY as string,
+// });
 
 async function main() {
     try {
@@ -73,11 +68,11 @@ async function main() {
 async function setupChroma() {
     return new Promise(async (res) => {
         if (!client) {
-            client = new ChromaClient({ path: "http://localhost:5555" });
+            client = new ChromaClient({ path: process.env.CHROMA_BACKEND_URL });
         }
         collection = await client.getOrCreateCollection({
             name: "my_collection_new",
-            embeddingFunction: embedder,
+            // embeddingFunction: embedder,
         });
         res(null);
     });

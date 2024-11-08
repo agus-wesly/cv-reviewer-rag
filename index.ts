@@ -3,7 +3,7 @@ import * as pdfjsLib from "pdfjs-dist";
 import { ChromaClient, GoogleGenerativeAiEmbeddingFunction } from "chromadb";
 
 const embedder = new GoogleGenerativeAiEmbeddingFunction({
-    googleApiKey: "AIzaSyAeX_8PudInBdQegoOxcJqU6o3MsOHP53I",
+    googleApiKey: process.env.GOOGLE_API_KEY as string,
 });
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "./pdf.worker.mjs";
@@ -42,7 +42,7 @@ async function setupChroma() {
     return new Promise(async (res, rej) => {
         try {
             if (!client) {
-                client = new ChromaClient({ path: "http://localhost:5555" });
+                client = new ChromaClient({ path: process.env.CHROMA_BACKEND_URL });
             }
             collection = await client.getOrCreateCollection({
                 name: "my_collection_new",
