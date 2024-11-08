@@ -26,7 +26,6 @@ async function main() {
     try {
         console.log("=======INITIALIZING CHROMA=======");
         await setupChroma();
-        console.log("DONE", collection.name);
         const results = await collection.query({
             queryTexts: values.query ?? "cv ats",
             nResults: 10,
