@@ -7,6 +7,21 @@
   </head>
   <body>
     <h1>Hello world</h1>
+    <input type="file" id="file" />
+    <button id="btn-submit">Submit</button>
   </body>
-  <script></script>
+  <script>
+    const inputFile = document.getElementById("file");
+    const submitButton = document.getElementById("btn-submit");
+
+    submitButton.addEventListener("click", async () => {
+      const formData = new FormData();
+      console.log("input-value", inputFile.files[0]);
+      formData.set("cv", inputFile.files[0]);
+      await fetch("/review", {
+        method: "POST",
+        body: formData,
+      });
+    });
+  </script>
 </html>
