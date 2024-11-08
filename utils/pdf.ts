@@ -4,7 +4,6 @@ import type { TextItem } from "pdfjs-dist/types/src/display/api";
 pdfjsLib.GlobalWorkerOptions.workerSrc = "./pdf.worker.mjs";
 
 export async function extractCV(cv: File) {
-    console.log({ cv });
     const arrayBuf = await cv.arrayBuffer();
     const documentPdf = await pdfjsLib.getDocument(arrayBuf).promise;
     const numberOfPages = documentPdf.numPages;
@@ -27,4 +26,19 @@ export async function extractCV(cv: File) {
         }
     }
     return summaryText;
+}
+
+type AspectContent = {
+    analysis: string;
+    keySteps: Array<string>;
+};
+
+type Aspect = {
+    profile: AspectContent;
+    education: AspectContent;
+    // TODO: Add more aspect
+};
+
+export async function processCV(content: string): Aspect {
+    return {};
 }

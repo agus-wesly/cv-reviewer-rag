@@ -22,8 +22,16 @@ const server = Bun.serve({
                 const cv = (await req.formData()).get("cv") as File;
                 if (!cv)
                     return new Response(JSON.stringify({ ok: false }), { status: 401 });
+
                 const content = await extractCV(cv);
+                if (!content)
+                    return new Response(
+                        JSON.stringify({ message: "Cannot extract CV." }),
+                        { status: 401 },
+                    );
+
                 console.log({ content });
+                //TODO: Process the CV
                 return new Response(JSON.stringify({ ok: true }), { status: 200 });
             }
         }
