@@ -1,57 +1,42 @@
-import { parseArgs } from "util";
-import * as pdfjsLib from "pdfjs-dist";
-import { ChromaClient, GoogleGenerativeAiEmbeddingFunction } from "chromadb";
+import { extractCV } from "./utils/pdf";
 
-const embedder = new GoogleGenerativeAiEmbeddingFunction({
-    googleApiKey: process.env.GOOGLE_API_KEY as string,
+const PORT = 5173;
+const MAX_TIMEOUT = 255;
+
+const server = Bun.serve({
+    port: PORT,
+    idleTimeout: MAX_TIMEOUT,
+    static: {
+        "/": new Response(await Bun.file("./index.html").bytes(), {
+            headers: {
+                "Content-Type": "text/html",
+            },
+        }),
+    },
+    async fetch(req) {
+        const url = new URL(req.url);
+        if (req.method === "POST") {
+            if (!isAllowedRequest(req))
+                return new Response(JSON.stringify({ ok: false }), { status: 401 });
+            if (url.pathname === "/review") {
+                const cv = (await req.formData()).get("cv") as File;
+                if (!cv)
+                    return new Response(JSON.stringify({ ok: false }), { status: 401 });
+                const content = await extractCV(cv);
+                console.log({ content });
+                return new Response(JSON.stringify({ ok: true }), { status: 200 });
+            }
+        }
+        return new Response("The page you are looking is not found", {
+            status: 404,
+        });
+    },
 });
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = "./pdf.worker.mjs";
+console.log("Listening on server : ", server.port);
 
-type Collection = Awaited<ReturnType<ChromaClient["getOrCreateCollection"]>>;
-
-let client: ChromaClient | null = null;
-let collection: Collection;
-
-async function main() {
-    const { values } = parseArgs({
-        args: Bun.argv,
-        options: {
-            query: {
-                type: "string",
-            },
-        },
-        allowPositionals: true,
-    });
-    try {
-        console.log("=======INITIALIZING CHROMA=======");
-        await setupChroma();
-        const results = await collection.query({
-            queryTexts: values.query ?? "cv ats",
-            nResults: 10,
-        });
-        console.log(results);
-    } catch (error) {
-        console.log("err", error);
-    }
-    return 0;
+function isAllowedRequest(request: Request) {
+    const allowed = ["http://localhost:5173"];
+    const origin = request.headers.get("Origin");
+    return allowed.includes(origin ?? "");
 }
-
-async function setupChroma() {
-    return new Promise(async (res, rej) => {
-        try {
-            if (!client) {
-                client = new ChromaClient({ path: process.env.CHROMA_BACKEND_URL });
-            }
-            collection = await client.getOrCreateCollection({
-                name: "my_collection_new",
-                embeddingFunction: embedder,
-            });
-            res(null);
-        } catch (error) {
-            rej(error);
-        }
-    });
-}
-
-main();
