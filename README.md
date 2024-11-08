@@ -1,15 +1,21 @@
-# chroma-bun
+# CV REVIEWER WITH RAG (Retrieval Augmented Generation)
 
-To install dependencies:
+Make sure to provide `.env` file:
 
 ```bash
-bun install
+cp .env.example .env
 ```
 
-To run:
+Fill the `.env` file with yours
+
+First run the setup:
+
+```bash
+bun run setup.ts
+```
+
+Then run the server:
 
 ```bash
 bun run index.ts
 ```
-
-This project was created using `bun init` in bun v1.1.33. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
