@@ -7,9 +7,14 @@ const server = Bun.serve({
     port: PORT,
     idleTimeout: MAX_TIMEOUT,
     static: {
-        "/": new Response(await Bun.file("./index.html").bytes(), {
+        "/": new Response(await Bun.file("./src/index.html").bytes(), {
             headers: {
                 "Content-Type": "text/html",
+            },
+        }),
+        "/output.css": new Response(await Bun.file(`./src/output.css`).bytes(), {
+            headers: {
+                "Content-Type": "text/css",
             },
         }),
     },
