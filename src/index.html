@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="http://localhost:5173/src/output.css" />
+  </head>
+  <body>
+    <input type="file" id="file" accept=".pdf" />
+    <button id="btn-submit">Submit</button>
+    <p class="text-lg font-extrabold">Hello</p>
+  </body>
+  <script>
+    const inputFile = document.getElementById("file");
+    const submitButton = document.getElementById("btn-submit");
+
+    submitButton.addEventListener("click", async () => {
+      const formData = new FormData();
+      console.log("input-value", inputFile.files[0]);
+      formData.set("cv", inputFile.files[0]);
+      await fetch("/review", {
+        method: "POST",
+        body: formData,
+      });
+    });
+  </script>
+</html>
