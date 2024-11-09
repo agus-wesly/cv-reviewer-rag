@@ -1,5 +1,8 @@
 import * as pdfjsLib from "pdfjs-dist";
 import type { TextItem } from "pdfjs-dist/types/src/display/api";
+import { getContextFromChroma } from "./chroma";
+import { getResponseFromLLM } from "./llm";
+import type { Aspect, AspectKey } from "./types";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "./pdf.worker.mjs";
 
@@ -28,17 +31,17 @@ export async function extractCV(cv: File) {
     return summaryText;
 }
 
-type AspectContent = {
-    analysis: string;
-    keySteps: Array<string>;
-};
+export async function processCV(cvContent: string): Promise<Aspect> {
+    const aspect = {} as Aspect;
+    for (const aspectKey of Object.keys(aspect)) {
+        const retrievedContext = await getContextFromChroma(aspectKey);
+        const responseFromLLM = await getResponseFromLLM(
+            aspectKey as AspectKey,
+            cvContent,
+            retrievedContext,
+        );
+        aspect[aspectKey as AspectKey] = responseFromLLM;
+    }
 
-type Aspect = {
-    profile: AspectContent;
-    education: AspectContent;
-    // TODO: Add more aspect
-};
-
-export async function processCV(content: string): Aspect {
-    return {};
+    return aspect;
 }
