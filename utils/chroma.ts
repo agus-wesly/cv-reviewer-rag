@@ -1,5 +1,6 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { ChromaClient, GoogleGenerativeAiEmbeddingFunction } from "chromadb";
+import type { AspectKey } from "./types";
 
 const embedder = new GoogleGenerativeAiEmbeddingFunction({
     googleApiKey: process.env.GOOGLE_API_KEY as string,
@@ -12,14 +13,13 @@ type Collection = Awaited<ReturnType<ChromaClient["getOrCreateCollection"]>>;
 let client: ChromaClient | null = null;
 let collection: Collection;
 
-export async function getContextFromChroma(aspect: string) {
+export async function getContextFromChroma(aspect: AspectKey) {
     try {
         await setupChroma();
         const results = await collection.query({
             queryTexts: `The ${aspect} criteria on cv are :`,
             nResults: 100,
         });
-        console.log(results);
         return results.documents.join(" ");
     } catch (error) {
         console.log("err", error);

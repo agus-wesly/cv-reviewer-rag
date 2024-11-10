@@ -1,4 +1,6 @@
+import { getContextFromChroma } from "./utils/chroma";
 import { extractCV } from "./utils/pdf";
+import type { AspectKey } from "./utils/types";
 
 const PORT = 5173;
 const MAX_TIMEOUT = 255;
@@ -34,7 +36,6 @@ const server = Bun.serve({
                         JSON.stringify({ message: "Cannot extract CV." }),
                         { status: 401 },
                     );
-
                 console.log({ content });
                 //TODO: Process the CV
                 return new Response(JSON.stringify({ ok: true }), { status: 200 });
