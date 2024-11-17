@@ -35,7 +35,7 @@ export async function processCV(cvContent: string): Promise<Aspect> {
     const aspect = {} as Aspect;
     for (const aspectKey of Object.keys(aspect)) {
         /* Set default value so if something went wrong,
-            we still got something to display.*/
+                        we still got something to display.*/
         const defaultResponse: AspectContent = {
             analysis: "",
             keySteps: [],
@@ -54,4 +54,23 @@ export async function processCV(cvContent: string): Promise<Aspect> {
     }
 
     return aspect;
+}
+
+export async function splitText(
+    text: string,
+    splitSize: number,
+    overlap: number,
+): Promise<[Array<string>, Array<string>]> {
+    const baseId = Date.now().toString();
+    const textLength = text.length;
+    const documents = [];
+    const ids = [];
+    let start = 0;
+    while (start < textLength) {
+        let end = start + splitSize;
+        documents.push(text.slice(start, end));
+        ids.push(`${baseId}-${start}-${end}`);
+        start = end - overlap;
+    }
+    return [documents, ids];
 }

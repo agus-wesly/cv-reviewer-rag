@@ -7,6 +7,7 @@ import {
     type IDs,
 } from "chromadb";
 import type { TextItem } from "pdfjs-dist/types/src/display/api";
+import { splitText } from "./utils/pdf";
 
 // import {OllamaEmbeddingFunction} from "chromadb";
 // const embedder = new OllamaEmbeddingFunction({
@@ -29,30 +30,28 @@ async function main() {
     try {
         console.log("=======INITIALIZING CHROMA=======");
         await setupChroma();
-        console.log("=======DONE INITIALIZING=======");
+        console.log("=======DONE INITIALIZING=========");
         const files = await readdir("./cv");
-        let documents = [];
-        let ids = [];
 
-        for (let i = 0; i < files.length; ++i) {
+        for (let i = 0; i < 15; ++i) {
+            let document = [];
             const documentPdf = await pdfjsLib.getDocument("./cv/" + files[i])
                 .promise;
             const numberOfPages = documentPdf.numPages;
-            for (let i = 1; i <= numberOfPages; ++i) {
-                const page = await documentPdf.getPage(i);
+            for (let j = 1; j <= numberOfPages; ++j) {
+                const page = await documentPdf.getPage(j);
                 const textContent = await page.getTextContent();
                 const items = textContent.items;
                 let name = "default";
                 let summaryText = "";
-                for (let j = 0; j < items.length; ++j) {
-                    const currText = items[j] as TextItem;
+                for (let k = 0; k < items.length; ++k) {
+                    const currText = items[k] as TextItem;
                     //@ts-ignore
                     if (name !== currText.fontName) {
                         if (name !== "default") {
                             // changed
                             if (summaryText.length > 5) {
-                                documents.push(summaryText);
-                                ids.push(`id-${i}-${j}-${currText.fontName}`);
+                                document.push(summaryText);
                                 summaryText = "";
                             }
                         }
@@ -61,8 +60,13 @@ async function main() {
                     summaryText += currText.str;
                 }
             }
+            const documentText = document.join("<br>");
+            const [documents, ids] = await splitText(documentText, 500, 150);
+            console.log("⚱️PStoring documents with index : " + i);
+            await storeInChromaDB(documents, ids);
+            console.log("✅ Done Storing documents with index : " + i);
+            await sleep(1000);
         }
-        await storeInChromaDB(documents, ids);
     } catch (e) {
         console.error("Error", e);
     }
@@ -91,9 +95,8 @@ async function storeInChromaDB(documents: Documents, ids: IDs) {
             documents: documents.slice(start, end),
             ids: ids.slice(start, end),
         });
-        console.log(`DONE EMBEDDING :D Start : ${start} End : ${end}`);
-        sleep(50);
         start = end;
+        await sleep(50);
     }
     Promise.resolve(null);
 }
