@@ -47,7 +47,8 @@ export async function getPreprocessedChunks(
 function parseResponseText(responseText: string): Array<string> {
     const replaced = responseText.replaceAll("```json", "").replaceAll("```", "");
     try {
-        return JSON.parse(replaced);
+        const parsed = JSON.parse(replaced);
+        return parsed.knowledge;
     } catch (error) {
         console.log("Parsing Error", error);
         return [];

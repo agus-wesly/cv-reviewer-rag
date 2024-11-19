@@ -19,31 +19,20 @@ const aspectTitle: Record<AspectKey, string> = {
     summary: "summary",
     education: "Education",
     experience: "Experienece",
-    errorWriting: "Error",
+    errorWriting: "Error in Writing and Grammar",
     achievment: "Achievment",
     contactInformation: "Contact",
     overallAnalysis: "Overall Analysis",
 };
 
-export async function getContextFromChroma(aspect: AspectKey) {
+export async function getContextFromChroma(aspect: AspectKey): Promise<string> {
     try {
         await setupChroma();
         const results = await collection.query({
-            queryTexts: `How should I optimize the ${aspectTitle[aspect]} section in my CV for ATS compatibility?`,
+            queryTexts: `CV ATS guidelines in terms of ${aspectTitle[aspect]} are`,
             nResults: 5,
-            whereDocument: {
-                $or: [
-                    {
-                        $contains: aspect.toLowerCase(),
-                    },
-                    {
-                        $contains: aspect,
-                    },
-                ],
-            },
         });
-        // TODO : Find good way to separate each chunk & put it inside prompt.
-        return results.documents[0].join(" || ");
+        return results.documents[0].join("\n");
     } catch (error) {
         console.log("err", error);
         return "";

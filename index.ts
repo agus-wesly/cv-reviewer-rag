@@ -1,6 +1,4 @@
-import { getContextFromChroma } from "./utils/chroma";
-import { extractCV } from "./utils/pdf";
-import type { AspectKey } from "./utils/types";
+import { extractCV, processCV } from "./utils/pdf";
 
 const PORT = 5173;
 const MAX_TIMEOUT = 255;
@@ -37,8 +35,11 @@ const server = Bun.serve({
                         { status: 401 },
                     );
                 console.log({ content });
-                //TODO: Process the CV
-                return new Response(JSON.stringify({ ok: true }), { status: 200 });
+                const result = await processCV(content);
+                return new Response(JSON.stringify(result), {
+                    status: 200,
+                    headers: { "Content-Type": "application/json" },
+                });
             }
         }
         return new Response("The page you are looking is not found", {

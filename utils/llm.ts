@@ -1,3 +1,4 @@
+import { parseResponseFromLLM } from "./formatter";
 import { prompts } from "./prompt";
 import type { AspectContent, AspectKey } from "./types";
 import {
@@ -17,9 +18,9 @@ Act as a proffesional CV ATS Reviewer. Your task is to review the *[[ASPECT]]* a
 > Key Steps : This section contains list of actions that the author of CV can do based on your analysis.
 '''
 
-The *Analysis* and *Key Steps* should be as simple as possible and highlight the most important parts. Use simple word that easy to understand. Assume that you are talking to the author of the CV.
+The *Analysis* and *Key Steps* should be simple and highlight the most important parts. Use simple word that easy to understand. Assume that you are talking to the author of the CV.
 
-You will be given 2 type of guidelines. The *From Document Guideline* and User Defined Guideline*. The *From Document Guideline* sometimes contains irrelevant information about the *Contant Information* aspect. If such the case, ignore it. And *User Defined Guideline* should have higher presedence than the *Document Guideline*.
+You will be given 2 type of guidelines. The *From Document Guidelines* and User Defined Guideline*. Some *From Document Guidelines* sometimes contain irrelevant information about the *[[ASPECT]]* aspect. If such the case, ignore that particular *From Document Guideline*. And *User Defined Guideline* should have higher presedence than the *Document Guidelines*.
 
 Also Consider the following Typescript type for the JSON schema :
   type AspectContent = {
@@ -58,10 +59,7 @@ export async function getResponseFromLLM(
             contents: [{ role: "user", parts: [{ text: prompt }] }],
         });
         text = result.response.text();
-        // TODO : Create parser to parse the output from LLM
-        text = text.replaceAll("```json```", "").replaceAll("```", "");
-        const aspectContentGenerated = JSON.parse(text) as AspectContent;
-        console.log(aspectContentGenerated);
+        const aspectContentGenerated = parseResponseFromLLM<AspectContent>(text);
         return aspectContentGenerated;
     } catch (error) {
         console.log(text);
@@ -73,7 +71,7 @@ export async function getResponseFromLLM(
 function getConfig(aspect: string): GenerationConfig {
     // TODO : Set appropriate config
     return {
-        temperature: 0.5,
+        temperature: 0.25,
         topP: 0.25,
         topK: 40,
         maxOutputTokens: 8192,

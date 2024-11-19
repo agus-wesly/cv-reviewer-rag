@@ -32,10 +32,16 @@ export async function extractCV(cv: File) {
 }
 
 export async function processCV(cvContent: string): Promise<Aspect> {
+    const aspects: Array<AspectKey> = [
+        "errorWriting",
+        "experience",
+        "contactInformation",
+    ];
+
     const aspect = {} as Aspect;
-    for (const aspectKey of Object.keys(aspect)) {
+    for (const aspectKey of aspects) {
         /* Set default value so if something went wrong,
-                        we still got something to display.*/
+                            we still got something to display.*/
         const defaultResponse: AspectContent = {
             analysis: "",
             keySteps: [],
@@ -44,7 +50,7 @@ export async function processCV(cvContent: string): Promise<Aspect> {
 
         const retrievedContext = await getContextFromChroma(aspectKey);
         const responseFromLLM = await getResponseFromLLM(
-            aspectKey as AspectKey,
+            aspectKey,
             cvContent,
             retrievedContext,
         );

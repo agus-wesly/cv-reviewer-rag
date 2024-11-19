@@ -9,19 +9,42 @@
   <body>
     <input type="file" id="file" accept=".pdf" />
     <button id="btn-submit">Submit</button>
-    <p class="text-lg font-extrabold">Hello</p>
+    <p style="display: none" id="loading">Loading...</p>
   </body>
   <script>
     const inputFile = document.getElementById("file");
     const submitButton = document.getElementById("btn-submit");
+    const loadingParagraph = document.getElementById("loading");
 
     submitButton.addEventListener("click", async () => {
       const formData = new FormData();
       console.log("input-value", inputFile.files[0]);
       formData.set("cv", inputFile.files[0]);
-      await fetch("/review", {
+      loadingParagraph.style.display = "block";
+      const resp = await fetch("/review", {
         method: "POST",
         body: formData,
+      });
+      const data = await resp.json();
+      loadingParagraph.style.display = "none";
+      // const data = {
+      //   contactInformation: { analysis: "foo", keySteps: ["bar"] },
+      //   skill: { analysis: "foo-skill", keySteps: ["bar"] },
+      // };
+      Object.keys(data).forEach((aspect) => {
+        const divContainer = document.createElement("div");
+        const paragraphAnalysis = document.createElement("p");
+        paragraphAnalysis.textContent = data[aspect].analysis;
+        divContainer.appendChild(paragraphAnalysis);
+
+        const ul = document.createElement("ul");
+        data[aspect].keySteps.forEach((step) => {
+          const li = document.createElement("li");
+          li.textContent = step;
+          ul.appendChild(li);
+        });
+        divContainer.appendChild(ul);
+        document.body.appendChild(divContainer);
       });
     });
   </script>

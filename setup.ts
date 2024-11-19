@@ -34,11 +34,10 @@ async function main() {
         console.log("=======DONE INITIALIZING=========");
         const files = await readdir("./cv");
 
-        for (let i = 0; i < 5; ++i) {
+        for (let i = 0; i < files.length; ++i) {
             let document = [];
             const documentPdf = await pdfjsLib.getDocument("./cv/" + files[i])
                 .promise;
-            console.log(files[i]);
             const numberOfPages = documentPdf.numPages;
             for (let j = 1; j <= numberOfPages; ++j) {
                 const page = await documentPdf.getPage(j);
@@ -73,7 +72,7 @@ async function main() {
             console.log("⚱️PStoring documents with index : " + i + " ...");
             await storeInChromaDB(chunks, ids);
             console.log("✅ Done Storing documents with index : " + i);
-            await sleep(1000);
+            await sleep(500);
         }
     } catch (e) {
         console.error("Error", e);
