@@ -8,6 +8,7 @@ import {
 } from "chromadb";
 import type { TextItem } from "pdfjs-dist/types/src/display/api";
 import { splitText } from "./utils/pdf";
+import { getPreprocessedChunks } from "./utils/setup/llm";
 
 // import {OllamaEmbeddingFunction} from "chromadb";
 // const embedder = new OllamaEmbeddingFunction({
@@ -33,10 +34,11 @@ async function main() {
         console.log("=======DONE INITIALIZING=========");
         const files = await readdir("./cv");
 
-        for (let i = 0; i < 15; ++i) {
+        for (let i = 0; i < 5; ++i) {
             let document = [];
             const documentPdf = await pdfjsLib.getDocument("./cv/" + files[i])
                 .promise;
+            console.log(files[i]);
             const numberOfPages = documentPdf.numPages;
             for (let j = 1; j <= numberOfPages; ++j) {
                 const page = await documentPdf.getPage(j);
@@ -61,9 +63,15 @@ async function main() {
                 }
             }
             const documentText = document.join("<br>");
-            const [documents, ids] = await splitText(documentText, 500, 150);
-            console.log("⚱️PStoring documents with index : " + i);
-            await storeInChromaDB(documents, ids);
+            console.log("⚱️PGenerating documents chunks with index : " + i + " ...");
+            const chunks = await getPreprocessedChunks(documentText);
+            console.log("⚱️✅ Done generating documents chunks with index : " + i);
+            const ids: Array<string> = [];
+            for (let i = 0; i < chunks.length; ++i) {
+                ids.push(`${files[i]}-${i}`);
+            }
+            console.log("⚱️PStoring documents with index : " + i + " ...");
+            await storeInChromaDB(chunks, ids);
             console.log("✅ Done Storing documents with index : " + i);
             await sleep(1000);
         }

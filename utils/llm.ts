@@ -1,54 +1,111 @@
+import { prompts } from "./prompt";
 import type { AspectContent, AspectKey } from "./types";
-import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
+import {
+    GenerativeModel,
+    GoogleGenerativeAI,
+    SchemaType,
+    type GenerationConfig,
+} from "@google/generative-ai";
 
 let genAI: GoogleGenerativeAI | null;
 let model: GenerativeModel | null;
 
-const BASE_PROMPT =
-    "You are a smart CV ATS Reviewer. Your task is to analyze the CV so that it matches ATS format. You will also be provided with guidelines that you can use to help you analyzing. Hopefully your analysis can help them improve their CV so it match ATS format. Please not that you should give response with standar text only, without the markdown formatting and is parseable with JSON.parse method of javascript!";
+const BASE_PROMPT = `
+Act as a proffesional CV ATS Reviewer. Your task is to review the *[[ASPECT]]* aspect of the provided CV according to your knowledge and the given guidelines. Your review sould consists of this following section : 
+'''
+> Analysis : This section contains your analysis of the *[[ASPECT]]* aspect of the CV. The analysis can also highlight the *already good part* or *the lack part* or *both*.
+> Key Steps : This section contains list of actions that the author of CV can do based on your analysis.
+'''
+
+The *Analysis* and *Key Steps* should be as simple as possible and highlight the most important parts. Use simple word that easy to understand. Assume that you are talking to the author of the CV.
+
+You will be given 2 type of guidelines. The *From Document Guideline* and User Defined Guideline*. The *From Document Guideline* sometimes contains irrelevant information about the *Contant Information* aspect. If such the case, ignore it. And *User Defined Guideline* should have higher presedence than the *Document Guideline*.
+
+Also Consider the following Typescript type for the JSON schema :
+  type AspectContent = {
+      analysis: string;
+      keySteps: Array<string>;
+}
+
+You should give the output only in JSON format that match the given JSON AspectContent type.
+
+CV Content: 
+[[CONTENT]]
+
+From Document Guideline:
+[[DOCUMENT_GUIDELINE]]
+
+User Defined Guidelines : 
+[[USER_GUDELINE]]
+
+Output : 
+`;
 
 export async function getResponseFromLLM(
     aspect: AspectKey,
     cvContent: string,
     context: string,
 ): Promise<AspectContent | null> {
+    let text;
     try {
         setupLLM();
         if (!genAI || !model) throw new Error("Error setup LLM !");
 
-        const prompt = `
-        Consider this following CV content extracted from a PDF document.
-        CV : '${cvContent}'
-
-        Consider this guideline extracted from a document.
-        Guideline : '${context}'
-
-        Consider the following Typescript type for the JSON schema : 
-            'type AspectContent = {
-                analysis: string;
-                keySteps: Array<string>;
-            }'
-
-        Your task is to analyze the CV so that it matches ATS format. Spesifically about the aspect : ${aspect} of the CV. You can use the guideline provided as your additional tools to help you analyze it. Give the output only in JSON format that match the given JSON AspectContent type.
-`;
-        const chat = model.startChat({
-            history: [
-                {
-                    role: "user",
-                    parts: [{ text: BASE_PROMPT }],
-                },
-            ],
+        const prompt = getPrompt(aspect, cvContent, context);
+        const config = getConfig(aspect);
+        const result = await model.generateContent({
+            generationConfig: config,
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
         });
-        const { response } = await chat.sendMessage(prompt);
-        const text = response.text();
-        console.log("text: ", text);
+        text = result.response.text();
         // TODO : Create parser to parse the output from LLM
+        text = text.replaceAll("```json```", "").replaceAll("```", "");
         const aspectContentGenerated = JSON.parse(text) as AspectContent;
+        console.log(aspectContentGenerated);
         return aspectContentGenerated;
     } catch (error) {
+        console.log(text);
         console.log("Something went wrong", error);
         return null;
     }
+}
+
+function getConfig(aspect: string): GenerationConfig {
+    // TODO : Set appropriate config
+    return {
+        temperature: 0.5,
+        topP: 0.25,
+        topK: 40,
+        maxOutputTokens: 8192,
+        responseMimeType: "application/json",
+        responseSchema: {
+            type: SchemaType.OBJECT,
+            properties: {
+                analysis: {
+                    type: SchemaType.STRING,
+                },
+                keySteps: {
+                    type: SchemaType.ARRAY,
+                    items: {
+                        type: SchemaType.STRING,
+                    },
+                },
+            },
+        },
+    };
+}
+
+function getPrompt(
+    aspect: AspectKey,
+    content: string,
+    documentGuideline: string,
+) {
+    const userGuideline = prompts.find((pr) => pr.aspect === aspect);
+    if (!userGuideline) throw new Error("User Guideline not found");
+    return BASE_PROMPT.replaceAll("[[CONTENT]]", content)
+        .replaceAll("[[ASPECT]]", aspect)
+        .replaceAll("[[DOCUMENT_GUIDELINE]]", documentGuideline)
+        .replaceAll("[[USER_GUDELINE]]", userGuideline.prompt);
 }
 
 function setupLLM() {
