@@ -6,7 +6,7 @@ export type AspectContent = {
 export type Aspect = {
     contactInformation: AspectContent;
     skill: AspectContent;
-    summary: AspectContent;
+    profesionalSummary: AspectContent;
     experience: AspectContent;
     achievment: AspectContent;
     education: AspectContent;

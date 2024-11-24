@@ -16,7 +16,7 @@ let collection: Collection;
 const aspectTitle: Record<AspectKey, string> = {
     organizationalActivity: "Organization",
     skill: "Skill",
-    summary: "summary",
+    profesionalSummary: "Professional Summary",
     education: "Education",
     experience: "Experienece",
     errorWriting: "Error in Writing and Grammar",
