@@ -13,15 +13,13 @@ type Collection = Awaited<ReturnType<ChromaClient["getOrCreateCollection"]>>;
 let client: ChromaClient | null = null;
 let collection: Collection;
 
-const aspectTitle: Record<AspectKey, string> = {
-    organizationalActivity: "Organization",
+export const aspectTitle: Record<AspectKey, string> = {
     skill: "Skill",
     profesionalSummary: "Professional Summary",
-    education: "Education",
+    education: "Education and Academic Achievments",
     experience: "Experienece",
     errorWriting: "Error in Writing and Grammar",
-    achievment: "Achievment",
-    contactInformation: "Contact",
+    contactInformation: "Contact Information",
     overallAnalysis: "Overall Analysis",
 };
 
@@ -30,8 +28,10 @@ export async function getContextFromChroma(aspect: AspectKey): Promise<string> {
         await setupChroma();
         const results = await collection.query({
             queryTexts: `CV ATS guidelines in terms of ${aspectTitle[aspect]} are`,
-            nResults: 5,
+            nResults: 10,
         });
+        console.log("Retrieved information for aspect " + aspect);
+        console.log(results.documents[0]);
         return results.documents[0].join("\n");
     } catch (error) {
         console.log("err", error);

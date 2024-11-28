@@ -34,7 +34,6 @@ const server = Bun.serve({
                         JSON.stringify({ message: "Cannot extract CV." }),
                         { status: 401 },
                     );
-                console.log({ content });
                 const result = await processCV(content);
                 return new Response(JSON.stringify(result), {
                     status: 200,

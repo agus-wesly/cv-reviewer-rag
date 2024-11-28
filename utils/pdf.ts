@@ -36,28 +36,62 @@ export async function processCV(cvContent: string): Promise<Aspect> {
         "errorWriting",
         "experience",
         "contactInformation",
+        "education",
+        "profesionalSummary",
+        "skill",
     ];
 
     const aspect = {} as Aspect;
-    for (const aspectKey of aspects) {
-        /* Set default value so if something went wrong,
-                            we still got something to display.*/
-        const defaultResponse: AspectContent = {
-            analysis: "",
-            keySteps: [],
-        };
-        aspect[aspectKey as AspectKey] = defaultResponse;
+    await Promise.all(
+        aspects.map(
+            (aspectKey) =>
+                new Promise(async (res, rej) => {
+                    try {
+                        /* Set default value so if something went wrong,
+                                                                                                                                                                                                      we still got something to display.*/
+                        const defaultResponse: AspectContent = {
+                            analysis: "",
+                            keySteps: [],
+                            score: 0,
+                        };
+                        aspect[aspectKey as AspectKey] = defaultResponse;
+                        const retrievedContext = await getContextFromChroma(aspectKey);
+                        const responseFromLLM = await getResponseFromLLM(
+                            aspectKey,
+                            cvContent,
+                            retrievedContext,
+                        );
+                        if (responseFromLLM) {
+                            aspect[aspectKey as AspectKey] = responseFromLLM;
+                        }
+                        res(null);
+                    } catch (error) {
+                        console.log("Error when generate resp", error);
+                        rej(error);
+                    }
+                }),
+        ),
+    );
 
-        const retrievedContext = await getContextFromChroma(aspectKey);
-        const responseFromLLM = await getResponseFromLLM(
-            aspectKey,
-            cvContent,
-            retrievedContext,
-        );
-        if (responseFromLLM) {
-            aspect[aspectKey as AspectKey] = responseFromLLM;
-        }
-    }
+    // for (const aspectKey of aspects) {
+    //     /* Set default value so if something went wrong,
+    //                                                             we still got something to display.*/
+    //     const defaultResponse: AspectContent = {
+    //         analysis: "",
+    //         keySteps: [],
+    //     };
+    //     aspect[aspectKey as AspectKey] = defaultResponse;
+
+    //     const retrievedContext = await getContextFromChroma(aspectKey);
+    //     const responseFromLLM = await getResponseFromLLM(
+    //         aspectKey,
+    //         cvContent,
+    //         retrievedContext,
+    //     );
+    //     if (responseFromLLM) {
+    //         aspect[aspectKey as AspectKey] = responseFromLLM;
+    //     }
+    // }
 
     return aspect;
 }

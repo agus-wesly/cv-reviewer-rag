@@ -34,7 +34,13 @@
       Object.keys(data).forEach((aspect) => {
         const divContainer = document.createElement("div");
         const paragraphAnalysis = document.createElement("p");
+        const header = document.createElement("h1");
+        const score = document.createElement("h3");
+        header.textContent = aspect + " Analysis";
         paragraphAnalysis.textContent = data[aspect].analysis;
+        score.textContent = "Score : " + data[aspect].score;
+        divContainer.appendChild(header);
+        divContainer.appendChild(score);
         divContainer.appendChild(paragraphAnalysis);
 
         const ul = document.createElement("ul");

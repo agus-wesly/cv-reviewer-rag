@@ -43,7 +43,7 @@ export const prompts: Array<Prompt> = [
     {
         aspect: "education",
         prompt: `
-> CV ATS should contain relevant coursework or projects in education section that showcase skill and knowledge
+> CV ATS should contain relevant coursework or projects  that showcase skill and knowledge
 > Relevant coursework or projects may also highlight any academic awards or honors received during studies
 `,
     },

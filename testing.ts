@@ -7,9 +7,9 @@ const cvContent =
 
 async function main() {
     const aspects: Array<AspectKey> = [
-        "errorWriting",
-        "experience",
-        "contactInformation",
+        "education",
+        // "experience",
+        // "contactInformation",
     ];
 
     // - Professional Summary
@@ -29,6 +29,7 @@ async function main() {
         if (resp) {
             console.log(`Analysis \n${resp.analysis}`);
             console.log(`Keysteps \n${resp.keySteps}`);
+            console.log(`Score \n${resp.score}`);
         }
     });
 }

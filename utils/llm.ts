@@ -1,3 +1,4 @@
+import { aspectTitle } from "./chroma";
 import { parseResponseFromLLM } from "./formatter";
 import { prompts } from "./prompt";
 import type { AspectContent, AspectKey } from "./types";
@@ -11,11 +12,38 @@ import {
 let genAI: GoogleGenerativeAI | null;
 let model: GenerativeModel | null;
 
+const config: GenerationConfig = {
+    temperature: 0.25,
+    topP: 0.25,
+    topK: 40,
+    maxOutputTokens: 8192,
+    responseMimeType: "application/json",
+    responseSchema: {
+        type: SchemaType.OBJECT,
+        properties: {
+            analysis: {
+                type: SchemaType.STRING,
+            },
+            keySteps: {
+                type: SchemaType.ARRAY,
+                items: {
+                    type: SchemaType.STRING,
+                },
+            },
+            score: {
+                type: SchemaType.NUMBER,
+            },
+        },
+        required: ["analysis", "keySteps"],
+    },
+};
+
 const BASE_PROMPT = `
 Act as a proffesional CV ATS Reviewer. Your task is to review the *[[ASPECT]]* aspect of the provided CV according to your knowledge and the given guidelines. Your review sould consists of this following section : 
 '''
-> Analysis : This section contains your analysis of the *[[ASPECT]]* aspect of the CV. The analysis can also highlight the *already good part* or *the lack part* or *both*.
-> Key Steps : This section contains list of actions that the author of CV can do based on your analysis.
+> Analysis : This section contains your brief analysis of the *[[ASPECT]]* aspect of the CV. The analysis can also highlight the *already good part* or *the lack part* or *both*.
+> Key Steps : This section contains list of brief step that the author of CV can do based on your analysis. The Key Steps is an array with brief step generated as its item. Key Steps contains maximum 3 of the most important step.
+> Score : The number representing your score based on your  analysis. The range is in persentage, between 0% and 100%.
 '''
 
 The *Analysis* and *Key Steps* should be simple and highlight the most important parts. Use simple word that easy to understand. Assume that you are talking to the author of the CV. Ignore the HTML character like '<br>' because the *CV Content* is is extracted HTML raw data
@@ -26,6 +54,7 @@ Also Consider the following Typescript type for the JSON schema :
   type AspectContent = {
       analysis: string;
       keySteps: Array<string>;
+      score: number;
 }
 
 You should give the output only in JSON format that match the given JSON AspectContent type.
@@ -53,7 +82,6 @@ export async function getResponseFromLLM(
         if (!genAI || !model) throw new Error("Error setup LLM !");
 
         const prompt = getPrompt(aspect, cvContent, context);
-        const config = getConfig(aspect);
         const result = await model.generateContent({
             generationConfig: config,
             contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -62,48 +90,25 @@ export async function getResponseFromLLM(
         const aspectContentGenerated = parseResponseFromLLM<AspectContent>(text);
         return aspectContentGenerated;
     } catch (error) {
-        console.log(text);
         console.log("Something went wrong", error);
         return null;
     }
 }
 
-function getConfig(aspect: string): GenerationConfig {
-    // TODO : Set appropriate config
-    return {
-        temperature: 0.25,
-        topP: 0.25,
-        topK: 40,
-        maxOutputTokens: 8192,
-        responseMimeType: "application/json",
-        responseSchema: {
-            type: SchemaType.OBJECT,
-            properties: {
-                analysis: {
-                    type: SchemaType.STRING,
-                },
-                keySteps: {
-                    type: SchemaType.ARRAY,
-                    items: {
-                        type: SchemaType.STRING,
-                    },
-                },
-            },
-        },
-    };
-}
-
 function getPrompt(
-    aspect: AspectKey,
+    aspectKey: AspectKey,
     content: string,
     documentGuideline: string,
 ) {
-    const userGuideline = prompts.find((pr) => pr.aspect === aspect);
+    const userGuideline = prompts.find((pr) => pr.aspect === aspectKey);
     if (!userGuideline) throw new Error("User Guideline not found");
-    return BASE_PROMPT.replaceAll("[[CONTENT]]", content)
-        .replaceAll("[[ASPECT]]", aspect)
-        .replaceAll("[[DOCUMENT_GUIDELINE]]", documentGuideline)
-        .replaceAll("[[USER_GUDELINE]]", userGuideline.prompt);
+    return (
+        BASE_PROMPT.replaceAll("[[CONTENT]]", content)
+            // TODO
+            .replaceAll("[[ASPECT]]", aspectTitle[aspectKey])
+            .replaceAll("[[DOCUMENT_GUIDELINE]]", documentGuideline)
+            .replaceAll("[[USER_GUDELINE]]", userGuideline.prompt)
+    );
 }
 
 function setupLLM() {

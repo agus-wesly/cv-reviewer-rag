@@ -1,6 +1,7 @@
 export type AspectContent = {
     analysis: string;
     keySteps: Array<string>;
+    score: number;
 };
 
 export type Aspect = {
@@ -8,9 +9,7 @@ export type Aspect = {
     skill: AspectContent;
     profesionalSummary: AspectContent;
     experience: AspectContent;
-    achievment: AspectContent;
     education: AspectContent;
-    organizationalActivity: AspectContent;
     errorWriting: AspectContent;
     overallAnalysis: Omit<AspectContent, "keySteps">;
 };
