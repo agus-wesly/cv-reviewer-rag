@@ -43,13 +43,15 @@
         divContainer.appendChild(score);
         divContainer.appendChild(paragraphAnalysis);
 
-        const ul = document.createElement("ul");
-        data[aspect].keySteps.forEach((step) => {
-          const li = document.createElement("li");
-          li.textContent = step;
-          ul.appendChild(li);
-        });
-        divContainer.appendChild(ul);
+        if (data[aspect].keySteps) {
+          const ul = document.createElement("ul");
+          data[aspect].keySteps.forEach((step) => {
+            const li = document.createElement("li");
+            li.textContent = step;
+            ul.appendChild(li);
+          });
+          divContainer.appendChild(ul);
+        }
         document.body.appendChild(divContainer);
       });
     });

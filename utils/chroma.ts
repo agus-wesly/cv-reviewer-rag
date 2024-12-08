@@ -24,6 +24,7 @@ export const aspectTitle: Record<AspectKey, string> = {
 };
 
 export async function getContextFromChroma(aspect: AspectKey): Promise<string> {
+    if (aspect === "overallAnalysis") return "";
     try {
         await setupChroma();
         const results = await collection.query({
