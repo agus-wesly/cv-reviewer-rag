@@ -42,7 +42,7 @@ function getPrompt(
     content: string,
     documentGuideline: string,
 ) {
-    if (aspectKey === "overallAnalysis")
+    if (aspectKey === "overall")
         return OVERALL_IMPRESSION_PROMPT.replaceAll("[[CONTENT]]", content);
 
     const userGuideline = prompts.find((pr) => pr.aspect === aspectKey);
@@ -54,7 +54,7 @@ function getPrompt(
 }
 
 function getConfigProperties(aspectKey: AspectKey): Schema["properties"] {
-    if (aspectKey === "overallAnalysis") {
+    if (aspectKey === "overall") {
         return {
             analysis: {
                 type: SchemaType.STRING,
