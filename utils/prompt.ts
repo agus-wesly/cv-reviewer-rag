@@ -96,7 +96,7 @@ export const prompts: Array<Prompt> = [
 `,
     },
     {
-        aspect: "overallAnalysis",
+        aspect: "overall",
         prompt: "",
     },
 ];

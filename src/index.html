@@ -4,56 +4,294 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="http://localhost:5173/src/output.css" />
+
+    <link rel="stylesheet" href="/output.css" />
   </head>
   <body>
-    <input type="file" id="file" accept=".pdf" />
-    <button id="btn-submit">Submit</button>
-    <p style="display: none" id="loading">Loading...</p>
+    <div id="app" class="flex flex-col w-full bg-[##D3D3D3]">
+        <!--HERO-->
+        <div class="bg-[#3A84DE] flex flex-col lg:flex-row text-white gap-10 items-end">
+            <div class="mt-10 flex flex-col gap-5 lg:gap-7 p-10">
+                <h5 class="text-lg lg:text-xl">Selamat datang di <strong>SIGMA</strong></h5>
+                <h1 class="text-3xl lg:text-5xl font-extrabold tracking-wide leading-9">Solusi Digital untuk CV Lebih Profesional</h1>
+                <p class="leading-relaxed"><strong>Sigma (Smart Integrated Guide for Maximized ATS-applicants)</strong> adalah aplikasi berbasis teknologi Large Language Model (LLM) dengan memanfaatkan teknik Retrieval Augmented Generation (RAG) untuk menganalisis dan meningkatkan CV pengguna dan memberikan rekomendasi berdasarkan pedoman pembuatan CV yang ramah ATS.</p>
+                <a href="#input-section" class="bg-[#183F78] rounded-full p-3 px-7 text-lg font-bold w-fit">Mulai Sekarang</a>
+            </div>
+
+            <img src="/assets/images/hero.png" alt="hero" width="550" height="450"/>
+
+        </div>
+
+        <!--INPUT-->
+        <div id="input-section" class="p-10 lg:py-20 flex flex-col gap-10 lg:gap-20 items-center">
+            <h2 class="text-2xl lg:text-4xl text-[#183F78] font-extrabold">Bedah 6 Aspek CV Kamu</h2>
+            <input type="file" id="input-file" class="hidden" accept=".pdf">
+            <label id="label-input-file" for="input-file" class="flex rounded-full lg:text-lg cursor-pointer overflow-hidden w-full max-w-[720px] bg-white border">
+                <div class="basis-[40%] flex-none bg-[#ADD0FA] font-semibold p-3 text-center">Upload file</div>
+                <div class="w-[60%] flex-1 p-3 bg-white text-center">Max.5MB</div>
+            </label>
+            <div id="cv-name-container" class="flex flex-col gap-4 items-center hidden">
+                <div class="flex items-center gap-2">
+                    <img src="/assets/icons/docs.svg" class="size-4 flex-none lg:flex" alt="icon" />
+                    <p id="cv-name-paragraph" class="text-sm">CV ATS Fajar.pdf</p>
+                </div>
+                <button id="btn-submit" class="bg-[#183F78] rounded-full p-3 px-7 text-lg font-bold w-fit text-white">Review Sekarang</button>
+            </div>
+        </div>
+
+        <!--LOADING-->
+        <div id="loading" class="bg-[#3A84DE] flex flex-col lg:flex-row text-white gap-10 p-5 lg:p-10 hidden">
+            <!--SIDEBAR-->
+            <ul class="flex flex-col font-bold overflow-x-auto gap-2">
+                <div class="flex lg:flex-col gap-3">
+                    <div class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <div class="h-4 w-full bg-neutral-100/20 animate-pulse rounded-sm min-w-32"></div>
+                    </div>
+                    <div class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <div class="h-4 w-full bg-neutral-100/20 animate-pulse rounded-sm min-w-32"></div>
+                    </div>
+                    <div class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <div class="h-4 w-full bg-neutral-100/20 animate-pulse rounded-sm min-w-32"></div>
+                    </div>
+                </div>
+
+                <div class="flex lg:flex-col gap-3">
+                    <div class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <div class="h-4 w-full bg-neutral-100/20 animate-pulse rounded-sm min-w-32"></div>
+                    </div>
+                    <div class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <div class="h-4 w-full bg-neutral-100/20 animate-pulse rounded-sm min-w-32"></div>
+                    </div>
+                    <div class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <div class="h-4 w-full bg-neutral-100/20 animate-pulse rounded-sm min-w-32"></div>
+                    </div>
+                </div>
+            </ul>
+
+            <!--CONTENT-->
+            <div id="loading-container" class="rounded-xl w-full max-w-[949px] h-[522px] overflow-y-scroll bg-[#DFFAF3] p-5 flex flex-col gap-5 capitalize">
+                <!--ITEM-->
+                <div  class="flex flex-col text-black bg-white p-4 lg:p-6 rounded-lg border relative z-[5] content gap-3">
+                    <div class="flex justify-between">
+                        <div class="h-6 w-[140px] bg-neutral-900/10 animate-pulse rounded"></div>
+                        <div class="h-6 w-[55px] bg-neutral-900/10 animate-pulse rounded"></div>
+                    </div>
+                    <div class="flex flex-col gap-4 text-xs lg:text-sm font-medium text-justify text-neutral-900">
+                        <!--Analysis-->
+                        <div class="space-y-1 md:space-y-2">
+                            <div class="h-6 w-[140px] bg-neutral-900/10 animate-pulse rounded"></div>
+                            <div class="h-6 w-full bg-neutral-900/10 animate-pulse rounded"></div>
+                        </div>
+                        <!--Key steps-->
+                        <div class="space-y-1 md:space-y-2">
+                            <div class="h-6 w-[140px] bg-neutral-900/10 animate-pulse rounded"></div>
+                            <div class="space-y-1">
+                            <div class="h-6 w-full bg-neutral-900/10 animate-pulse rounded"></div>
+                            <div class="h-6 w-full bg-neutral-900/10 animate-pulse rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div  class="flex flex-col text-black bg-white p-4 lg:p-6 rounded-lg border relative z-[5] content gap-3">
+                    <div class="flex justify-between">
+                        <div class="h-6 w-[140px] bg-neutral-900/10 animate-pulse rounded"></div>
+                        <div class="h-6 w-[55px] bg-neutral-900/10 animate-pulse rounded"></div>
+                    </div>
+                    <div class="flex flex-col gap-4 text-xs lg:text-sm font-medium text-justify text-neutral-900">
+                        <!--Analysis-->
+                        <div class="space-y-1 md:space-y-2">
+                            <div class="h-6 w-[140px] bg-neutral-900/10 animate-pulse rounded"></div>
+                            <div class="h-6 w-full bg-neutral-900/10 animate-pulse rounded"></div>
+                        </div>
+                        <!--Key steps-->
+                        <div class="space-y-1 md:space-y-2">
+                            <div class="h-6 w-[140px] bg-neutral-900/10 animate-pulse rounded"></div>
+                            <div class="space-y-1">
+                            <div class="h-6 w-full bg-neutral-900/10 animate-pulse rounded"></div>
+                            <div class="h-6 w-full bg-neutral-900/10 animate-pulse rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div  class="flex flex-col text-black bg-white p-4 lg:p-6 rounded-lg border relative z-[5] content gap-3">
+                    <div class="flex justify-between">
+                        <div class="h-6 w-[140px] bg-neutral-900/10 animate-pulse rounded"></div>
+                        <div class="h-6 w-[55px] bg-neutral-900/10 animate-pulse rounded"></div>
+                    </div>
+                    <div class="flex flex-col gap-4 text-xs lg:text-sm font-medium text-justify text-neutral-900">
+                        <!--Analysis-->
+                        <div class="space-y-1 md:space-y-2">
+                            <div class="h-6 w-[140px] bg-neutral-900/10 animate-pulse rounded"></div>
+                            <div class="h-6 w-full bg-neutral-900/10 animate-pulse rounded"></div>
+                        </div>
+                        <!--Key steps-->
+                        <div class="space-y-1 md:space-y-2">
+                            <div class="h-6 w-[140px] bg-neutral-900/10 animate-pulse rounded"></div>
+                            <div class="space-y-1">
+                            <div class="h-6 w-full bg-neutral-900/10 animate-pulse rounded"></div>
+                            <div class="h-6 w-full bg-neutral-900/10 animate-pulse rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <!--ANALYSIS-->
+        <div id="analysis" class="bg-[#3A84DE] flex flex-col lg:flex-row text-white gap-10 p-5 lg:p-10 hidden">
+            <!--SIDEBAR-->
+            <ul class="flex flex-col font-bold overflow-x-auto gap-2">
+                <div class="flex lg:flex-col gap-3">
+                    <button data-target="overall-analysis" class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <img src="/assets/icons/dashboard.svg" class="size-4 flex-none hidden lg:flex" alt="icon" />
+                        <span>
+                            OVERALL IMPRESSION
+                        </span>
+                    </button>
+                    <button data-target="experience-analysis" class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <img src="/assets/icons/work-outline.svg" class="size-4 flex-none hidden lg:flex" alt="icon" />
+                        <span>
+                            EXPERIENCE ANALYSIS
+                        </span>
+                    </button>
+                    <button data-target="contactInformation-analysis" class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <img src="/assets/icons/contact-info.svg" class="size-4 flex-none hidden lg:flex" alt="icon" />
+                        <span>
+                            CONTACT INFORMATION
+                        </span>
+                    </button>
+                </div>
+
+                <div class="flex lg:flex-col gap-3">
+                    <button data-target="education-analysis" class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <img src="/assets/icons/student.svg" class="size-4 flex-none hidden lg:flex" alt="icon" />
+                        <span>
+                            EDUCATION ANALYSIS
+                        </span>
+                    </button>
+                    <button data-target="profesionalSummary-analysis" class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <img src="/assets/icons/building-office.svg" class="size-4 flex-none hidden lg:flex" alt="icon" />
+                        <span>
+                            PROFESSIONAL SUMMARY
+                        </span>
+                    </button>
+                    <button data-target="skill-analysis" class="bg-[#183F78] text-xs lg:text-sm rounded-lg flex items-center flex-none gap-2 p-2 lg:p-3 text-center btn-navigation">
+                        <img src="/assets/icons/skill-level.svg" class="size-4 flex-none hidden lg:flex" alt="icon" />
+                        <span>
+                            SKILL ANALYSIS
+                        </span>
+                    </button>
+                </div>
+            </ul>
+
+            <!--CONTENT-->
+            <div id="content-container" class="rounded-xl w-full max-w-[949px] h-[522px] overflow-y-scroll bg-[#DFFAF3] p-5 flex flex-col gap-5">
+                <!--ITEM-->
+            </div>
+        </div>
+
+        <!--TEAM-->
+        <div class="p-10 py-36 flex flex-col gap-10 lg:gap-20 items-center">
+            <h3 class="text-xl lg:text-2xl text-[#183F78] font-bold">THE SIGMA TEAM</h3>
+            <div class="flex flex-col lg:flex-row gap-9 justify-evenly w-full">
+                <!--Person-->
+                <div class="flex flex-col gap-2 lg:gap-4 items-center">
+                    <div class="rounded-full size-44 bg-[#D3D3D3] overflow-hidden flex items-center justify-center">
+                        <img src="https://cdn.soccerwiki.org/images/player/126495.png" class="size-full object-contain" alt="profile" />
+                    </div>
+                    <strong>Agustinus Wesly Sitanggang</strong>
+                    <p class="text-neutral-700 text-sm">Software Engineer</p>
+                    <div class="flex gap-2">
+                        <a target="_blank" href="https://www.instagram.com/agus_wesly/" class="size-9 bg-[#183F78] flex items-center justify-center rounded-full">
+                            <img src="/assets/icons/instagram.svg" alt="instagram" />
+                        </a>
+                        <a target="_blank" href="https://github.com/agus-wesly" class="size-9 bg-[#183F78] flex items-center justify-center rounded-full">
+                            <img src="/assets/icons/github.svg" alt="github" />
+                        </a>
+                    </div>
+                </div>
+
+                <!--Person-->
+                <div class="flex flex-col gap-2 lg:gap-4 items-center">
+                    <div class="rounded-full size-44 bg-[#D3D3D3] overflow-hidden flex items-center justify-center">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhDCe8MNiZvOUUrg07EP7L2bLBMd0fdxc8RA&s" class="size-full scale-150 object-contain" alt="profile" />
+                    </div>
+                    <strong>Sheva Rizky Diaz Islami</strong>
+                    <p class="text-neutral-700 text-sm">Software Engineer</p>
+                    <div class="flex gap-2">
+                        <a target="_blank" href="https://www.instagram.com/rizkiidiaz" class="size-9 bg-[#183F78] flex items-center justify-center rounded-full">
+                            <img src="/assets/icons/instagram.svg" alt="instagram" />
+
+                        </a>
+                        <a target="_blank" href="" class="size-9 bg-[#183F78] flex items-center justify-center rounded-full">
+                            <img src="/assets/icons/github.svg" alt="github" />
+                        </a>
+                    </div>
+                </div>
+
+                <!--Person-->
+                <div class="flex flex-col gap-2 lg:gap-4 items-center">
+                    <div class="rounded-full size-44 bg-[#D3D3D3] overflow-hidden flex items-center justify-center">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgX0mSdT0Sw5roRDKE6BeOh5mDvlFXMC9we3O9_zkiiVdzzdGPcTEQQ-mRSXDXgpvKBWQ&usqp=CAU" class="size-full scale-110  object-contain" alt="profile" />
+                    </div>
+                    <strong>Jaka Mursid Muarif</strong>
+                    <p class="text-neutral-700 text-sm">Software Engineer</p>
+                    <div class="flex gap-2">
+                        <a href="https://www.instagram.com/jaka.mursidm/" target="_blank" class="size-9 bg-[#183F78] flex items-center justify-center rounded-full">
+                            <img src="/assets/icons/instagram.svg" alt="instagram" />
+                        </a>
+                        <a  class="size-9 bg-[#183F78] flex items-center justify-center rounded-full">
+                            <img src="/assets/icons/github.svg" alt="github" />
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+            <div class="flex flex-col lg:flex-row gap-9 justify-evenly w-full">
+                <!--Person-->
+                <div class="flex flex-col gap-2 lg:gap-4 items-center">
+                    <div class="rounded-full size-44 bg-[#D3D3D3] overflow-hidden flex items-center justify-center">
+                        <img src="https://static.wikitide.net/tampvanwiki/0/0a/Rusdi_Omaygot.png" class="size-full object-contain" alt="profile" />
+                    </div>
+                    <strong>Irfan Hidayat</strong>
+                    <p class="text-neutral-700 text-sm">Software Engineer</p>
+                    <div class="flex gap-2">
+                        <a href="https://www.instagram.com/irfan_mpan30/" target="_blank" class="size-9 bg-[#183F78] flex items-center justify-center rounded-full">
+                            <img src="/assets/icons/instagram.svg" alt="instagram" />
+                        </a>
+                        <a href="https://github.com/irfan-mpan30" target="_blank" class="size-9 bg-[#183F78] flex items-center justify-center rounded-full">
+                            <img src="/assets/icons/github.svg" alt="github" />
+                        </a>
+                    </div>
+                </div>
+
+                <!--Person-->
+                <div class="flex flex-col gap-2 lg:gap-4 items-center">
+                    <div class="rounded-full size-44 bg-[#D3D3D3] overflow-hidden flex items-center justify-center">
+                        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhbaqx145-1U78Ah6eOkd4qKWvGGg1k_NJGy8Wm95ywFeDnifw4gMGgaWcI57CALAbpeqZH-mCTjBqF68tOESG_j6J4wnfXT5jgJ1DFl-LXY40WyiLXFVJV8lQG7D3o_TGg0I8jULtUQhKKdof-6wp6k5XGELmgCuZ70A1_VNSnF4vn2hLm_EsOEqB4nw/s853/mr ironi meme.jpg" class="size-full object-contain" alt="profile" />
+                    </div>
+                    <strong>Ridwan Arief Mutaqin</strong>
+                    <p class="text-neutral-700 text-sm">Software Engineer</p>
+                    <div class="flex gap-2">
+                        <a href="https://www.instagram.com/xyluxe_/" target="_blank" class="size-9 bg-[#183F78] flex items-center justify-center rounded-full">
+                            <img src="/assets/icons/instagram.svg" alt="instagram" />
+                        </a>
+                        <a class="size-9 bg-[#183F78] flex items-center justify-center rounded-full">
+                            <img src="/assets/icons/github.svg" alt="github" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
   </body>
-  <script>
-    const inputFile = document.getElementById("file");
-    const submitButton = document.getElementById("btn-submit");
-    const loadingParagraph = document.getElementById("loading");
-
-    submitButton.addEventListener("click", async () => {
-      const formData = new FormData();
-      console.log("input-value", inputFile.files[0]);
-      formData.set("cv", inputFile.files[0]);
-      loadingParagraph.style.display = "block";
-      const resp = await fetch("/review", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await resp.json();
-      loadingParagraph.style.display = "none";
-      // const data = {
-      //   contactInformation: { analysis: "foo", keySteps: ["bar"] },
-      //   skill: { analysis: "foo-skill", keySteps: ["bar"] },
-      // };
-      Object.keys(data).forEach((aspect) => {
-        const divContainer = document.createElement("div");
-        const paragraphAnalysis = document.createElement("p");
-        const header = document.createElement("h1");
-        const score = document.createElement("h3");
-        header.textContent = aspect + " Analysis";
-        paragraphAnalysis.textContent = data[aspect].analysis;
-        score.textContent = "Score : " + data[aspect].score;
-        divContainer.appendChild(header);
-        divContainer.appendChild(score);
-        divContainer.appendChild(paragraphAnalysis);
-
-        if (data[aspect].keySteps) {
-          const ul = document.createElement("ul");
-          data[aspect].keySteps.forEach((step) => {
-            const li = document.createElement("li");
-            li.textContent = step;
-            ul.appendChild(li);
-          });
-          divContainer.appendChild(ul);
-        }
-        document.body.appendChild(divContainer);
-      });
-    });
+  <script src="./script.js">
   </script>
 </html>

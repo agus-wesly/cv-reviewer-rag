@@ -20,19 +20,19 @@ export const aspectTitle: Record<AspectKey, string> = {
     experience: "Experienece",
     errorWriting: "Error in Writing and Grammar",
     contactInformation: "Contact Information",
-    overallAnalysis: "Overall Analysis",
+    overall: "Overall Analysis",
 };
 
 export async function getContextFromChroma(aspect: AspectKey): Promise<string> {
-    if (aspect === "overallAnalysis") return "";
+    if (aspect === "overall") return "";
     try {
         await setupChroma();
         const results = await collection.query({
             queryTexts: `CV ATS guidelines in terms of ${aspectTitle[aspect]} are`,
             nResults: 10,
         });
-        console.log("Retrieved information for aspect " + aspect);
-        console.log(results.documents[0]);
+        // console.log("Retrieved information for aspect " + aspect);
+        // console.log(results.documents[0]);
         return results.documents[0].join("\n");
     } catch (error) {
         console.log("err", error);

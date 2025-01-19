@@ -1,9 +1,15 @@
-import { getContextFromChroma } from "./utils/chroma";
-import { getResponseFromLLM } from "./utils/llm";
-import type { AspectKey } from "./utils/types";
+Act as a proffesional CV ATS Reviewer. Your task is to review the *Error Free Writing* aspect of the provided CV according to your knowledge and the given guidelines. Your review should consists of this following section : 
+```
+> Analysis : This section contains your analysis of the *Error Free Writing* aspect of the CV. The analysis can also highlight the *already good part* or *the lack part* or *both*.
+> Action Points : This section contains list of actions that the author of CV can do based on your analysis.
+```
+
+The `Analysis` and `Action Points` should be as simple as possible and highlight the most important parts. Use simple word that easy to understand.
 
 
-const cvContent = `Tsabina Faradina Uli
+CV Content: 
+```
+Tsabina Faradina Uli
 Content Writer - Copywriter
 Fresh graduate from French Studies, University of Indonesia, with knowledge of creative writing and marketing content. Passionate freelance writer who have several experiences in writing variety of business, platform, and media sources. Capable to write variety topics. Have high interest in education.
 Contact
@@ -52,37 +58,14 @@ Universitas Indonesia | Depok, West Java
 High School Diploma
 SMA N 2 SEMARANG | Semarang, Central Java
 2016 - 2019
-`
-;
+```
 
-async function main() {
-    const aspects: Array<AspectKey> = [
-        "experience"
-        // "education",
-        // "experience",
-        // "contactInformation",
-    ];
+Guidelines : 
+> CV ATS should contains correct spelling and grammar
+> CV ATS should contains  consistent formatting
 
-    // - Professional Summary
-    // - Professional Experience
-    // - Skils
-    // - Education
-    // - Certification
-    // - Grammar and Keyword
 
-    aspects.forEach(async (aspect) => {
-        const context = await getContextFromChroma(aspect);
-        // console.log("\n");
-        // console.log(`Guidelines for ${aspect} aspect`);
-        // console.log(context);
-        // console.log("\n");
-        const resp = await getResponseFromLLM(aspect, cvContent, context);
-        if (resp) {
-            console.log(`Analysis \n${resp.analysis}`);
-            console.log(`Keysteps \n${resp.keySteps}`);
-            console.log(`Score \n${resp.score}`);
-        }
-    });
-}
 
-main();
+Temperature : 1.5
+Top P : 0.25
+Top K : 40

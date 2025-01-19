@@ -11,7 +11,7 @@ export type Aspect = {
     experience: AspectContent;
     education: AspectContent;
     errorWriting: AspectContent;
-    overallAnalysis: Omit<AspectContent, "keySteps">;
+    overall: Omit<AspectContent, "keySteps">;
 };
 
 export type AspectKey = keyof Aspect;

@@ -33,8 +33,8 @@ export async function extractCV(cv: File) {
 
 export async function processCV(cvContent: string): Promise<Aspect> {
     const aspects: Array<AspectKey> = [
-        "overallAnalysis",
-        "errorWriting",
+        "overall",
+        // "errorWriting",
         "experience",
         "contactInformation",
         "education",
@@ -47,6 +47,7 @@ export async function processCV(cvContent: string): Promise<Aspect> {
         aspects.map(
             (aspectKey) =>
                 new Promise(async (res, rej) => {
+                    console.log("ASPECT : ", aspectKey);
                     try {
                         /* Set default value so if something went wrong,
                                                                                                                                                                                                                                           we still got something to display.*/
