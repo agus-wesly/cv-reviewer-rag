@@ -41,6 +41,7 @@ const server = Bun.serve({
             }
         }
         else if (req.method === "POST") {
+            console.log(process.env.GOOGLE_API_KEY)
             if (!isAllowedRequest(req))
                 return new Response(JSON.stringify({ ok: false }), { status: 401 });
             if (url.pathname === "/review") {
